@@ -337,6 +337,15 @@ static int alloc_dma_mem(size_t size, u32 align, u32 flags,
 	align = ALIGN(align, SZ_4K);
 	size = ALIGN(size, SZ_4K);
 
+	/*
+	 * The firmware reaches the encoder persist buffer through the secure
+	 * non-pixel stream even in non-secure sessions, so it always comes
+	 * from secure non-pixel memory and the secure non-pixel context bank.
+	 */
+	if (buffer_type == HAL_BUFFER_INTERNAL_PERSIST &&
+		session_type == MSM_VIDC_ENCODER)
+		flags |= SMEM_SECURE;
+
 	/* All dma-heap allocations are cached by default. */
 	if (flags & SMEM_SECURE) {
 
